@@ -1,0 +1,25 @@
+name: Spring Boot CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo çek
+        uses: actions/checkout@v4
+
+      - name: Java kur
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Maven İşlemleri
+        working-directory: glowguide-backend
+        run: |
+          mvn clean install -DskipTests
+          mvn test -DskipTests
