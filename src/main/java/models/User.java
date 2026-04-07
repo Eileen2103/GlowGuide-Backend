@@ -23,10 +23,10 @@ public class User {
 	private String name;
 	private String surname;
 
-	@Column(name = "user_name", nullable = false, unique = true)
+	@Column(name = "user_name", nullable = false, unique = true, length = 150)
 	private String userName;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false, unique = true, length = 150)
 	private String email;
 
 	@Column(nullable = false)
@@ -36,11 +36,12 @@ public class User {
 	private String skinType;
 
 	private LocalDate birthday;
+
+	@Column(name = "avatar_url")
 	private String avatarUrl;
-	
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserProducts> products;
-
 
 	public User() {
 	};

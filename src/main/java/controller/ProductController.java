@@ -19,8 +19,11 @@ import service.ProductService;
 @RequestMapping("/api/products")
 public class ProductController {
 
-	@Autowired
-	public ProductService productService;
+	public final ProductService productService;
+
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
 
 	@PostMapping("/add/{userId}")
 	public ResponseEntity<String> addProduct(@RequestBody ProductCreateDto dto, @PathVariable Long userId) {

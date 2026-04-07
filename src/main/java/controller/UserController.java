@@ -17,8 +17,11 @@ import service.UserService;
 @RequestMapping("/api/users")
 public class UserController {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/register") // yeni kayıt
 	public ResponseEntity<String> register(@RequestBody UserRegisterDto dto) {

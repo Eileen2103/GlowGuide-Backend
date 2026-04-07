@@ -30,6 +30,8 @@ public class Posts {
 	private User user;
 
 	private String title;
+
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -39,7 +41,7 @@ public class Posts {
 	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();
 	}
-	
+
 	@OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Comments> comments;
 
