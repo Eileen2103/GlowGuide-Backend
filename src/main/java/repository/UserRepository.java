@@ -10,6 +10,10 @@ import models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	boolean existsByUserName(String userName);
-	//Optional<User> findByUserName(String userName);
+	// Optional<User> findByUserName(String userName);
+
+	boolean existsByEmail(String email);
+
+	Optional<User> findByEmail(String email);
 
 }

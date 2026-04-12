@@ -78,7 +78,7 @@ public class User {
 		this.surname = surname;
 	}
 
-	public String getuserName() {
+	public String getUserName() {
 		return userName;
 	}
 
@@ -102,7 +102,7 @@ public class User {
 		this.birthday = birthday;
 	}
 
-	public String geSkinType() {
+	public String getSkinType() {
 		return skinType;
 	}
 
@@ -110,7 +110,7 @@ public class User {
 		this.skinType = skinType;
 	}
 
-	public String getPasword() {
+	public String getPassword() {
 		return password;
 	}
 
