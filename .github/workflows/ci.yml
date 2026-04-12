@@ -19,7 +19,4 @@ jobs:
           distribution: 'temurin'
 
       - name: Maven İşlemleri
-        working-directory: glowguide-backend
-        run: |
-          mvn clean install -DskipTests
-          mvn test -DskipTests
+        run: mvn clean install -DskipTests
