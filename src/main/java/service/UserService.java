@@ -29,6 +29,8 @@ public class UserService {
 		dto.setEmail(user.getEmail());
 		dto.setSkinType(user.getSkinType());
 		dto.setAvatarUrl(user.getAvatarUrl());
+		dto.setName(user.getName());
+		dto.setSurname(user.getSurname());
 
 		return dto;
 

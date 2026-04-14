@@ -36,7 +36,9 @@ public class ProductService {
 			dto.setId(p.getId());
 			dto.setName(p.getName());
 			dto.setBrand(p.getBrand());
-			dto.setSafetyScore(p.getSafetyScore());
+			dto.setSafetyScore(p.getSafetyScore() != null ? p.getSafetyScore() : 0.0);
+			dto.setCategory(p.getCategory() != null ? p.getCategory() : null);
+			dto.setOpenedAt(p.getOpenedAt() != null ? p.getOpenedAt() : null);
 			return dto;
 		}).collect(Collectors.toList());
 	}
