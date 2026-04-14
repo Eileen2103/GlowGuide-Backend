@@ -14,6 +14,26 @@ public class ProductResponseDto {
 	private ProductCategory category;
 	private String aiFeedback;
 	private double safetyScore;
+	private long remainingDays;
+	private Integer paoMonths;
+
+	
+	public ProductResponseDto() {
+	}
+
+	// Manuel Constructor (Servis katmanı için)
+	public ProductResponseDto(String name, long remainingDays) {
+		this.name = name;
+		this.remainingDays = remainingDays;
+	}
+
+	public long getRemainingDays() {
+		return remainingDays;
+	}
+
+	public void setRemainingDays(long remainingDays) {
+		this.remainingDays = remainingDays;
+	}
 
 	public String getName() {
 		return name;
@@ -79,4 +99,13 @@ public class ProductResponseDto {
 		this.safetyScore = safetyScore;
 	}
 
+	public Integer getPaoMonths() {
+		return paoMonths;
+	}
+
+	public void setPaoMonths(Integer paoMonths) {
+		this.paoMonths = paoMonths;
+	}
+
+	
 }

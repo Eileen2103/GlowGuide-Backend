@@ -48,11 +48,21 @@ public class UserProducts {
 
 	@Enumerated(EnumType.STRING)
 	private ProductCategory category;
+	
+	private Integer paoMonths;
 
 	
+
 	public UserProducts() {
 	};
 
+	public Integer getPaoMonths() {
+		return paoMonths;
+	}
+
+	public void setPaoMonths(Integer paoMonths) {
+		this.paoMonths = paoMonths;
+	}
 	public Long getId() {
 		return id;
 	}

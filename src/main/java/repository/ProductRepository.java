@@ -9,5 +9,8 @@ import models.UserProducts;
 public interface ProductRepository extends JpaRepository<UserProducts, Long> {
 	
 	List <UserProducts> findByUserId (Long userId) ;
+	
+	// Kullanıcının ürünlerini son kullanma tarihine göre (artan) getiren sorg
+	List<UserProducts> findByUserIdOrderByOpenedAtAsc(Long userId);
 
 }

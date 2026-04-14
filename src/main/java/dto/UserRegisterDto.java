@@ -5,8 +5,8 @@ import java.time.LocalDate;
 public class UserRegisterDto {
 	private String userName;
 	private String email;
-	private String firstName;
-	private String lastName;
+	private String name;
+	private String surname;
 	private String password;
 	private String skinType;
 	private LocalDate birthday;
@@ -28,20 +28,20 @@ public class UserRegisterDto {
 		this.email = email;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getSurname() {
+		return surname;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 
 	public String getPassword() {
@@ -75,7 +75,5 @@ public class UserRegisterDto {
 	public void setAvatarUrl(String avatarUrl) {
 		this.avatarUrl = avatarUrl;
 	}
-	
-	
 
 }

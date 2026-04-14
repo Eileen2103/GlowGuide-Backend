@@ -12,6 +12,7 @@ public class ProductCreateDto {
 	private ProductCategory category;
 	private String aiFeedback;
 	private double safetyScore;
+	private Integer paoMonths;
 	
 	
 	
@@ -72,4 +73,13 @@ public class ProductCreateDto {
 		this.category = category;
 	}
 
+	public Integer getPaoMonths() {
+		return paoMonths;
+	}
+
+	public void setPaoMonths(Integer paoMonths) {
+		this.paoMonths = paoMonths;
+	}
+
+	
 }

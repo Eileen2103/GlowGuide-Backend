@@ -1,5 +1,8 @@
 package service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,7 @@ public class ProductService {
 			dto.setSafetyScore(p.getSafetyScore() != null ? p.getSafetyScore() : 0.0);
 			dto.setCategory(p.getCategory() != null ? p.getCategory() : null);
 			dto.setOpenedAt(p.getOpenedAt() != null ? p.getOpenedAt() : null);
+			dto.setPaoMonths(p.getPaoMonths()!= null ? p.getPaoMonths() : null);
 			return dto;
 		}).collect(Collectors.toList());
 	}
@@ -54,10 +58,28 @@ public class ProductService {
 		products.setAiFeedback(dto.getAiFeedback());
 		products.setOpenedAt(dto.getOpenedAt());
 		products.setSafetyScore(dto.getSafetyScore());
+		products.setPaoMonths(dto.getPaoMonths());
 
 		productRepo.save(products);
 		return "Ürün başarıyla kaydedildi!";
 
 	}
 
+	public ProductResponseDto getUrgentProduct(Long userId) {
+	    List<UserProducts> products = productRepo.findByUserId(userId);
+	    
+	    if (products.isEmpty()) return null;
+
+	    return products.stream()
+	        .map(p -> {
+	            // Son kullanma tarihini hesapla: Açılış Tarihi + PAO Ayı
+	            LocalDate expiryDate = p.getOpenedAt().plusMonths(p.getPaoMonths());
+	            long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
+	            
+	            return new ProductResponseDto(p.getName(), daysLeft);
+	        })
+	        // Kalan günü en az olanı bul (en acil olan)
+	        .min(Comparator.comparingLong(ProductResponseDto::getRemainingDays))
+	        .orElse(null);
+	}
 }
