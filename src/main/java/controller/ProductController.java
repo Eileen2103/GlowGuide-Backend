@@ -36,4 +36,13 @@ public class ProductController {
 		return ResponseEntity.ok(productService.getMyProducts(userId));
 	}
 
+	@GetMapping("/urgent/{userId}")
+	public ResponseEntity<ProductResponseDto> getUrgentProduct(@PathVariable Long userId) {
+		ProductResponseDto urgentProduct = productService.getUrgentProduct(userId);
+		if (urgentProduct == null) {
+			return ResponseEntity.noContent().build(); // Ürün yoksa 204 dön
+		}
+		return ResponseEntity.ok(urgentProduct);
+	}
+
 }
