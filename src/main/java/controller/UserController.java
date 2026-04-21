@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,30 +34,33 @@ public class UserController {
 
 	}
 
+	
 	@GetMapping("/{id}") // giriş yaptıktan sonra
 	public ResponseEntity<UserResponseDto> getProfile(@PathVariable Long id) {
 		return ResponseEntity.ok(userService.getUserProfile(id));
 	}
+
 	
-	@PostMapping("/login")  //kullanıcı girişi doğrulama
+	
+	
+	
+	@PostMapping("/login") // kullanıcı girişi doğrulama
 	public ResponseEntity<?> login(@RequestBody UserLoginDto dto) {
-	    
-	    UserResponseDto user = userService.login(dto);
-	    
-	    if (user != null) {
-	        return ResponseEntity.ok(user); // Giriş başarılı, kullanıcı bilgilerini dön
-	    } else {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-posta veya şifre hatalı!");
-	    }
+		System.out.println("🔥 CONTROLLER LOGIN HIT");
+
+		try {
+			UserResponseDto user = userService.login(dto);
+			return ResponseEntity.ok(user);
+
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("success", false, "message", e.getMessage()));
+		}
 	}
-	
-	
-	
-	
-	
+
 	@GetMapping("/test")
 	public String test() {
-	    return "Bağlantı Başarılı!";
+		return "Bağlantı Başarılı!";
 	}
 
 }
