@@ -1,0 +1,6 @@
+-- GREETİNG MESSAGES Tablosu
+CREATE TABLE greeting_messages (
+id INT AUTO_INCREMENT PRIMARY KEY,
+content VARCHAR(250) NOT NULL,
+message_type VARCHAR(50) NOT NULL
+);
