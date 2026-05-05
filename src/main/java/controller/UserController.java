@@ -8,13 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dto.UserAccountUpdateDto;
 import dto.UserLoginDto;
 import dto.UserRegisterDto;
 import dto.UserResponseDto;
+import dto.UserUpdateDto;
 import service.UserService;
 
 @RestController
@@ -34,16 +37,11 @@ public class UserController {
 
 	}
 
-	
 	@GetMapping("/{id}") // giriş yaptıktan sonra
 	public ResponseEntity<UserResponseDto> getProfile(@PathVariable Long id) {
 		return ResponseEntity.ok(userService.getUserProfile(id));
 	}
 
-	
-	
-	
-	
 	@PostMapping("/login") // kullanıcı girişi doğrulama
 	public ResponseEntity<?> login(@RequestBody UserLoginDto dto) {
 		System.out.println("🔥 CONTROLLER LOGIN HIT");
@@ -56,6 +54,19 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.body(Map.of("success", false, "message", e.getMessage()));
 		}
+	}
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto updateDto) {
+
+		return ResponseEntity.ok(userService.updateUser(id, updateDto));
+
+	}
+
+	@PutMapping("/update/account/{id}")
+	public ResponseEntity<UserResponseDto> updateAccountSettings(@PathVariable Long id,
+			@RequestBody UserAccountUpdateDto updateDto) {
+		return ResponseEntity.ok(userService.updateUserSettings(id, updateDto));
 	}
 
 	@GetMapping("/test")

@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import dto.UserAccountUpdateDto;
 import dto.UserLoginDto;
 import dto.UserRegisterDto;
 import dto.UserResponseDto;
+import dto.UserUpdateDto;
 import models.User;
 import repository.UserRepository;
 
@@ -81,17 +83,48 @@ public class UserService {
 		System.err.println("!!! LOGIN METODUNA GIRILDI !!!");
 		System.out.println("Gelen Email: " + dto.getEmail());
 		System.out.println("Gelen Şifre: " + dto.getPassword());
-		
-		
 
-		User user = userRepo.findByEmail(dto.getEmail())
-	            .orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepo.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
-	    if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-	        throw new RuntimeException("Wrong password");
-	    }
+		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+			throw new RuntimeException("Wrong password");
+		}
 
-	    return convertToResponseDto(user);
+		return convertToResponseDto(user);
+	}
+
+	public UserResponseDto updateUser(Long id, UserUpdateDto updateDto) {
+
+		User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+		if (updateDto.getName() != null)
+			user.setName(updateDto.getName());
+		if (updateDto.getSurname() != null)
+			user.setSurname(updateDto.getSurname());
+		if (updateDto.getUserName() != null)
+			user.setUserName(updateDto.getUserName());
+		if (updateDto.getSkinType() != null)
+			user.setSkinType(updateDto.getSkinType());
+		if (updateDto.getAvatarUrl() != null)
+			user.setAvatarUrl(updateDto.getAvatarUrl());
+
+		User updatedUser = userRepo.save(user);
+		return convertToResponseDto(updatedUser);
+
+	}
+
+	public UserResponseDto updateUserSettings(Long id, UserAccountUpdateDto updateDto) {
+
+		User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+
+		if (updateDto.getEmail() != null) {
+			user.setEmail(updateDto.getEmail());
+		}
+		if (updateDto.getPassword() != null) {
+			String encodedPassword = passwordEncoder.encode(updateDto.getPassword());
+			user.setPassword(encodedPassword);
+		}
+		return convertToResponseDto(userRepo.save(user));
+
 	}
 
 }
