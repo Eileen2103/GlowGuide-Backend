@@ -1,15 +1,18 @@
 package service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dto.CommentsResponseDto;
+import models.CommentLike;
 import models.Comments;
 import models.Posts;
 import models.User;
+import repository.CommentLikeRepository;
 import repository.CommentRepository;
 import repository.PostsRepository;
 import repository.UserRepository;
@@ -25,6 +28,9 @@ public class CommentService {
 
 	@Autowired
 	private UserRepository userRepo;
+
+	@Autowired
+	private CommentLikeRepository commentLikeRepo;
 
 	// 1. BELİRLİ BİR POSTA AİT YORUMLARI GETİRME (Read)
 	public List<CommentsResponseDto> getCommentsByPostId(Long postId) {
@@ -64,7 +70,7 @@ public class CommentService {
 		return "Yorum başarıyla eklendi!";
 	}
 
-	// 3. ENTITY -> DTO DÖNÜŞTÜRÜCÜ (Mapping)
+	// DTO DÖNÜŞTÜRÜCÜ (Mapping)
 	private CommentsResponseDto convertToResponseDto(Comments comment) {
 		CommentsResponseDto dto = new CommentsResponseDto();
 		dto.setId(comment.getId());
@@ -74,7 +80,7 @@ public class CommentService {
 			dto.setCreatedAt(comment.getCreatedAt().toString());
 		}
 
-		// Yazar Bilgilerini Düzleştirerek DTO'ya aktarıyoruz
+		// Yazar Bilgilerini düzleştirerek DTO'ya aktar
 		if (comment.getUser() != null) {
 			dto.setUserId(comment.getUser().getId());
 			String name = comment.getUser().getName() != null ? comment.getUser().getName() : "";
@@ -87,6 +93,32 @@ public class CommentService {
 		dto.setLikeCount(comment.getLikes() != null ? comment.getLikes().size() : 0);
 
 		return dto;
+	}
+
+	public String toggleCommentLike(Long commentId, Long userId) {
+
+		// Kullanıcı daha önce bu yorumu beğenmiş mi
+		Optional<CommentLike> existingLike = commentLikeRepo.findByUserIdAndCommentId(userId, commentId);
+
+		if (existingLike.isPresent()) {
+			// Eğer zaten beğendiyse, beğeniyi geri al (Satırı sil)
+			commentLikeRepo.delete(existingLike.get());
+			return "Beğeni geri alındı";
+		} else {
+			// Eğer daha önce beğenmediyse, yeni ilişki satırı oluştur
+			User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+
+			Comments comment = commentRepo.findById(commentId)
+					.orElseThrow(() -> new RuntimeException("Yorum bulunamadı!"));
+
+			CommentLike newLike = new CommentLike();
+			newLike.setUser(user);
+			newLike.setComment(comment);
+
+			commentLikeRepo.save(newLike);
+			return "Yorum beğenildi";
+		}
+
 	}
 
 }
