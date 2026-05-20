@@ -1,7 +1,9 @@
 package models;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -34,9 +37,23 @@ public class Comments {
 
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
+	
+	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<CommentLike> likes;
 
 	public Comments() {
 	};
+
+	
+	public List<CommentLike> getLikes() {
+		return likes;
+	}
+
+
+	public void setLikes(List<CommentLike> likes) {
+		this.likes = likes;
+	}
+
 
 	public Long getId() {
 		return id;

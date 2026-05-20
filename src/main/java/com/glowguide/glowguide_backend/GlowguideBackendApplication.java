@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan(basePackages = "models") // Modellerin olduğu paketi tanıtıyoruz
+@EntityScan(basePackages = "models") // Modellerin olduğu paketi tanıt
 @ComponentScan(basePackages = { "com.glowguide.glowguide_backend", // Ana paket
 		"controller", // Diğer paketlerin
 		"service", "repository", "models", "dto", "config" })
