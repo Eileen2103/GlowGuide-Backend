@@ -41,8 +41,7 @@ public class CommentController {
 		return ResponseEntity.ok(comments);
 	}
 
-	// URLÖrneği: /comments/5/like/1 (1 nolu kullanıcı, 5 nolu yorumu toggle
-	// yapıyor)
+	// URLÖrneği: /comments/5/like/1 (1 nolu kullanıcı, 5 nolu yorumu toggle yapıyor 
 	@PostMapping("/{commentId}/like/{userId}")
 	public ResponseEntity<String> toggleCommentLike(@PathVariable Long commentId, @PathVariable Long userId) {
 
