@@ -127,4 +127,8 @@ public class UserService {
 
 	}
 
+	public User getEntityById(Long id) {
+		return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+	}
+
 }
