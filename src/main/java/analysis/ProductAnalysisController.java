@@ -13,7 +13,7 @@ import models.User;
 import service.UserService;
 
 @RestController
-@RequestMapping("/api/analyze")
+@RequestMapping("/api/product/analyze")
 public class ProductAnalysisController {
 	
 	
