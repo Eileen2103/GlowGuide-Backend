@@ -12,7 +12,7 @@ public class GeminiService {
         try {
             System.out.println("QA KONTROL: Çevre Değişkeni Üzerinden SDK Ayağa Kaldırılıyor...");
 
-            //  Kılavuzdaki gibi boş constructor ile çağır
+            //  Kılavuzdaki gibi boş constructor ile çağırr
             // SDK, anahtarı işletim sisteminin GOOGLE_API_KEY değişkeninden otomatik okuyacak.
             Client client = new Client();
 
