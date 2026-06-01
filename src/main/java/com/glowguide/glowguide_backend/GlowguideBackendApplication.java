@@ -9,9 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackages = "models") // Modellerin olduğu paketi tanıt
 @ComponentScan(basePackages = { "com.glowguide.glowguide_backend", // Ana paket
-		"controller", // Diğer paketlerin
-		"service", "repository", "models", "dto", "config" })
-@EnableJpaRepositories(basePackages = "repository") // Eğer Repository'lerin de dışarıdaysa bunu ekle
+		"analysis", "ingredient", "ocr", "controller", "service", "repository", "models", "dto", "config" })
+@EnableJpaRepositories(basePackages = "repository")
 public class GlowguideBackendApplication {
 
 	public static void main(String[] args) {
