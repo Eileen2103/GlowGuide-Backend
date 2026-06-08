@@ -12,79 +12,80 @@ import java.util.List;
 @Service
 public class ScoreCalculator {
 
-	// OCR sonrası eşleşmiş ingredient listesi ve giriş yapan user geliyor
 	public AnalysisResultDto calculate(List<ScannedProductIngredient> ingredients, User user) {
+	    // 🎯 Başlangıç taban puanı
+	    int baseScore = 70; 
+	    int ingredientImpactSum = 0;
+	    int validIngredientCount = 0;
 
-		int totalScore = 50;
+	    List<String> positives = new ArrayList<>();
+	    List<String> negatives = new ArrayList<>();
+	    String skinType = user.getSkinType();
 
-		List<String> positives = new ArrayList<>();
-		List<String> negatives = new ArrayList<>();
+	    for (ScannedProductIngredient scanned : ingredients) {
+	        Ingredient ingredient = scanned.getIngredient();
+	        if (ingredient == null) continue;
 
-		String skinType = user.getSkinType();
+	        validIngredientCount++;
 
-		for (ScannedProductIngredient scanned : ingredients) {
+	        // 1. Cilt Tipi Puanını Al (Örn: 10 üzerinden 4 veya 8)
+	        int ingredientScore = getSkinTypeScore(ingredient, skinType);
+	        
+	        // Sıra bonusu (İlk maddeler daha baskın)
+	        int orderBonus = calculateOrderEffect(scanned.getIngredientOrder());
 
-			Ingredient ingredient = scanned.getIngredient();
+	        // Maddenin toplam pozitif/negatif etkisini hesapla (Max 15 puan gelebilsin)
+	        int currentProductImpact = (ingredientScore + orderBonus);
+	        
+	        // Eğer veritabanı puanı çok düşükse (Alkol, Parfüm gibi < 5), bunu ceza puanı havuzuna yönlendir
+	        if (ingredientScore < 5) {
+	            ingredientImpactSum -= (5 - ingredientScore); // Düşük puanlar skoru aşağı çeker
+	        } else {
+	            ingredientImpactSum += currentProductImpact; // Yüksek puanlar yukarı taşır
+	        }
 
-			if (ingredient == null)
-				continue;
+	        // 2. KOMEDOJENİK KONTROL (Kritik Cezalar)
+	        if (ingredient.getComedogenicRating() != null && ingredient.getComedogenicRating() >= 4) {
+	            ingredientImpactSum -= 15; // Ceza büyütüldü
+	            negatives.add(ingredient.getCanonicalName() + " yüksek komedojenik olabilir");
+	        }
 
-			int ingredientScore = getSkinTypeScore(ingredient, skinType);
+	        // 3. İRRİTASYON KONTROL
+	        if ("HIGH".equalsIgnoreCase(ingredient.getIrritationLevel())) {
+	            ingredientImpactSum -= 12; // Parfüm ve Alkolün canını yakacak QA dokunuşu
+	            negatives.add(ingredient.getCanonicalName() + " hassasiyet oluşturabilir");
+	        }
 
-			int orderBonus = calculateOrderEffect(scanned.getIngredientOrder());
+	        // 4. FUNGAL ACNE KONTROL
+	        if (Boolean.FALSE.equals(ingredient.getFungalAcneSafe())) {
+	            ingredientImpactSum -= 6;
+	            negatives.add(ingredient.getCanonicalName() + " fungal acne için uygun olmayabilir");
+	        }
 
-			totalScore += ingredientScore;
-			totalScore += orderBonus;
+	        // İYİ İÇERİKLER RAPORU
+	        if (ingredientScore >= 8) {
+	            positives.add(ingredient.getCanonicalName() + " cildin için faydalı görünüyor");
+	        }
+	    }
 
-			// KOMEDOJENİK KONTROL
-			if (ingredient.getComedogenicRating() != null && ingredient.getComedogenicRating() >= 4) {
+	    // 🎯 MATEMATİKSEL DENGELEME:
+	    // Maddelerin kümülatif etkisini toplam skora yediriyoruz
+	    int totalScore = baseScore + (validIngredientCount > 0 ? (ingredientImpactSum / validIngredientCount) : 0);
 
-				totalScore -= 10;
+	    // SCORE LIMITS
+	    if (totalScore > 100) totalScore = 100;
+	    if (totalScore < 0) totalScore = 0;
 
-				negatives.add(ingredient.getCanonicalName() + " yüksek komedojenik olabilir");
-			}
+	    String riskLevel = calculateRisk(totalScore);
 
-			// İRRİTASYON KONTROL
-			if ("HIGH".equalsIgnoreCase(ingredient.getIrritationLevel())) {
+	    AnalysisResultDto result = new AnalysisResultDto();
+	    result.setOverallScore(totalScore);
+	    result.setRiskLevel(riskLevel);
+	    result.setPositives(positives);
+	    result.setNegatives(negatives);
+	    result.setSummary(generateSummary(totalScore, riskLevel));
 
-				totalScore -= 8;
-
-				negatives.add(ingredient.getCanonicalName() + " hassasiyet oluşturabilir");
-			}
-
-			// FUNGAL ACNE
-			if (Boolean.FALSE.equals(ingredient.getFungalAcneSafe())) {
-
-				totalScore -= 5;
-
-				negatives.add(ingredient.getCanonicalName() + " fungal acne için uygun olmayabilir");
-			}
-
-			// İYİ İÇERİKLER
-			if (ingredientScore >= 8) {
-
-				positives.add(ingredient.getCanonicalName() + " cildin için faydalı görünüyor");
-			}
-		}
-
-		// SCORE LIMIT
-		if (totalScore > 100)
-			totalScore = 100;
-		if (totalScore < 0)
-			totalScore = 0;
-
-		String riskLevel = calculateRisk(totalScore);
-
-		AnalysisResultDto result = new AnalysisResultDto();
-
-		result.setOverallScore(totalScore);
-		result.setRiskLevel(riskLevel);
-		result.setPositives(positives);
-		result.setNegatives(negatives);
-
-		result.setSummary(generateSummary(totalScore, riskLevel));
-
-		return result;
+	    return result;
 	}
 
 	private int getSkinTypeScore(Ingredient ingredient, String skinType) {
@@ -92,43 +93,33 @@ public class ScoreCalculator {
 		if (skinType == null)
 			return 0;
 
-		switch (skinType.toLowerCase()) {
+		String trimmedType = skinType.trim().toLowerCase(java.util.Locale.ROOT);
 
-		case "yağlı":
-		case "yağlı/akneye eğilimli":
+		if (trimmedType.contains("yağlı") || trimmedType.contains("yagli") || trimmedType.contains("akne")) {
 			return safeValue(ingredient.getOilySkinScore());
-
-		case "kuru":
-		case "kuru/hassas":
+		} else if (trimmedType.contains("kuru") || trimmedType.contains("hassas")) {
 			return safeValue(ingredient.getDrySkinScore());
-
-		case "hassas":
-			return safeValue(ingredient.getSensitiveSkinScore());
-
-		case "karma":
+		} else if (trimmedType.contains("karma")) {
 			return safeValue(ingredient.getCombinationSkinScore());
-
-		case "normal":
+		} else if (trimmedType.contains("normal")) {
 			return safeValue(ingredient.getNormalSkinScore());
-
-		default:
-			return 0;
 		}
+
+		return 0;
 	}
 
 	private int calculateOrderEffect(int order) {
 
-		// ilk 5 içerik daha etkili
-		if (order <= 5) {
+		if (order == 1)
 			return 5;
-		}
-
-		// orta seviye
-		if (order <= 10) {
+		if (order == 2)
+			return 4;
+		if (order == 3)
+			return 3;
+		if (order == 4)
 			return 2;
-		}
-
-		// listenin sonundakiler düşük yoğunluk
+		if (order == 5)
+			return 1;
 		return 0;
 	}
 

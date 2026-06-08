@@ -1,6 +1,7 @@
 package service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import dto.RoutineResponseDto;
 import dto.RoutineSaveRequestDto;
+import models.RoutineTime;
 import models.User;
 import models.UserRoutines;
 import repository.UserRepository;
@@ -18,6 +20,8 @@ public class RoutineService {
 
 	@Autowired
 	private UserRoutinesRepository routineRepository;
+
+	@Autowired
 	private UserRepository userRepo;
 
 	public List<RoutineResponseDto> getRoutinesByUserId(Long userId) {
@@ -30,6 +34,7 @@ public class RoutineService {
 			dto.setDescription(entity.getDescription());
 			dto.setCompleted(entity.isCompleted());
 			dto.setType(entity.getType()); // MORNING veya EVENING vyea WEEKLY
+			// dto.setType(RoutineTime.valueOf(dto.getType()));
 			return dto;
 		}).collect(Collectors.toList());
 	}
@@ -59,7 +64,7 @@ public class RoutineService {
 		entity.setUser(user);
 
 		entity.setDescription(dto.getDescription());
-		entity.setType(dto.getType());
+		entity.setType(RoutineTime.valueOf(dto.getType()));
 		entity.setDayOfWeek(dto.getDayOfWeek());
 		entity.setCompleted(false);
 
@@ -76,6 +81,32 @@ public class RoutineService {
 		response.setDayOfWeek(savedEntity.getDayOfWeek());
 
 		return response;
+	}
+
+	public boolean updateRoutineStatus(Long routineId, boolean isCompleted) {
+		try {
+			System.out.println(" Rutin ID: " + routineId + " için yeni durum kaydediliyor: " + isCompleted);
+
+			// 1. İlgili rutini veritabanından buluyoruz
+			Optional<UserRoutines> routineOpt = routineRepository.findById(routineId);
+
+			if (routineOpt.isPresent()) {
+				UserRoutines routine = routineOpt.get();
+
+				// 2. Sadece tamamlanma durumunu (completed) güncelle
+				routine.setCompleted(isCompleted);
+
+				routineRepository.save(routine);
+				return true;
+			}
+
+			System.err.println("QA : Güncellenmek istenen rutin bulunamadı! ID: " + routineId);
+			return false;
+		} catch (Exception e) {
+			System.err.println("Rutin güncellenirken hata oluştu: " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

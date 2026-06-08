@@ -1,6 +1,8 @@
 package controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,7 +13,9 @@ import dto.AnalysisResultDto;
 import analysis.AnalysisOrchestrator;
 
 @RestController
-@RequestMapping("/api/analyze")
+@RequestMapping("/api/analysis")
+@CrossOrigin("*")
+// @CrossOrigin(origins = "https://www.glowguideapp.com") Sadece bu resmi site istek atabilir! doğrusu bu
 public class AnalysisController {
 
 	private final AnalysisOrchestrator orchestrator;
@@ -20,12 +24,12 @@ public class AnalysisController {
 		this.orchestrator = orchestrator;
 	}
 
-	@PostMapping
-	public ResponseEntity<AnalysisResultDto> analyze(@RequestParam Long userId, @RequestParam String productName,
-			@RequestParam String imageUrl, @RequestParam MultipartFile image) {
+	@PostMapping("/{userId}")
+	public ResponseEntity<AnalysisResultDto> scanProduct(@PathVariable Long userId,
+			@RequestParam("productName") String productName, @RequestParam("imageUrl") String imageUrl,
+			@RequestParam("image") MultipartFile image) {
 
 		AnalysisResultDto result = orchestrator.run(userId, productName, imageUrl, image);
-
 		return ResponseEntity.ok(result);
 	}
 }
