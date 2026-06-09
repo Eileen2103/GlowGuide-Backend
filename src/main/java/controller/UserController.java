@@ -69,6 +69,11 @@ public class UserController {
 		return ResponseEntity.ok(userService.updateUserSettings(id, updateDto));
 	}
 
+	@PutMapping("/update/skinType/{id}")
+	public ResponseEntity<UserResponseDto> updateUserSkinType(@PathVariable Long id, @RequestBody UserUpdateDto dto) {
+		return ResponseEntity.ok(userService.updateUserSkinType(id, dto));
+	}
+
 	@GetMapping("/test")
 	public String test() {
 		return "Bağlantı Başarılı!";

@@ -112,6 +112,17 @@ public class UserService {
 
 	}
 
+	//to only update user skin type
+	public UserResponseDto updateUserSkinType(Long id, UserUpdateDto dto) {
+		User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+		if (dto.getSkinType() != null)
+			user.setSkinType(dto.getSkinType());
+
+		User updatedUser = userRepo.save(user);
+		return convertToResponseDto(updatedUser);
+
+	}
+
 	public UserResponseDto updateUserSettings(Long id, UserAccountUpdateDto updateDto) {
 
 		User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
