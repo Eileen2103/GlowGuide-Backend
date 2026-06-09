@@ -93,4 +93,12 @@ public class PostService {
 		return "Post başarıyla güncellendi";
 	}
 
+	public String deletePost(Long postId) {
+		if (!postRepo.existsById(postId)) {
+			throw new RuntimeException("Silinecek post bulunamadı! ID: " + postId);
+		}
+		postRepo.deleteById(postId);
+		return "Post başarıyla silindi!";
+	}
+
 }
