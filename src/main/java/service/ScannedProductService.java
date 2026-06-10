@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import analysis.ScoreCalculator;
+import dto.AnalysisHistoryDto;
 import dto.AnalysisResultDto;
 import ingredient.IngredientMatcherService;
 import models.Ingredient;
@@ -77,6 +78,36 @@ public class ScannedProductService {
 
 		return result;
 
+	}
+
+	public List<AnalysisHistoryDto> getHistoryByUserId(Long userId) {
+
+		List<ScannedProduct> products = scannedProductRepo.findByUserIdOrderByCreatedAtDesc(userId);
+
+		return products.stream().map(product -> {
+
+			AnalysisHistoryDto dto = new AnalysisHistoryDto();
+
+			dto.setId(product.getId());
+			dto.setProductName(product.getProductName());
+			dto.setOverallScore(product.getOverallScore());
+			dto.setRiskLevel(product.getRiskLevel());
+			dto.setAnalysisResult(product.getAnalysisResult());
+			dto.setCreatedAt(product.getCreatedAt());
+
+			return dto;
+
+		}).toList();
+	}
+
+	public ScannedProduct updateProductName(Long productId, String productName) {
+
+		ScannedProduct product = scannedProductRepo.findById(productId)
+				.orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
+
+		product.setProductName(productName);
+
+		return scannedProductRepo.save(product);
 	}
 
 }
