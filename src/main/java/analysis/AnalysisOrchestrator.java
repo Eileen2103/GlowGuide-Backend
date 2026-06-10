@@ -54,9 +54,17 @@ public class AnalysisOrchestrator {
 		// =========================================================================
 		List<String> cleanedIngredients = new ArrayList<>();
 		try {
-			String cleanPrompt = "Aşağıdaki kozmetik/cilt bakımı ürünü ham OCR metninden sadece içerik maddelerini (ingredients) ayıkla, "
-					+ "yazım hatalarını düzelt ve bana sadece virgülle ayrılmış temiz bir liste ver. Başka hiçbir açıklama yazma.\n"
-					+ "Ham Metin: " + rawOcrText;
+			String cleanPrompt =
+				    "You are a strict data extraction system.\n" +
+				    "Extract ONLY ingredient names from the text below.\n" +
+				    "Rules:\n" +
+				    "- Output ONLY comma-separated ingredients\n" +
+				    "- NO explanations\n" +
+				    "- NO titles\n" +
+				    "- NO extra words\n" +
+				    "- NO bullet points\n" +
+				    "- If text is unclear, guess closest ingredient name\n\n" +
+				    "Input:\n" + rawOcrText;
 
 			String geminiCleanedOutput = geminiService.testCall(cleanPrompt);
 			System.out.println("Gemini Temizlenmiş İçerikler: " + geminiCleanedOutput);

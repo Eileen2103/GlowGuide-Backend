@@ -56,7 +56,7 @@ public class PostController {
 	}
 
 	@DeleteMapping("/delete/{postId}")
-	public ResponseEntity<String> deleteProduct(@PathVariable Long postId) {
+	public ResponseEntity<String> deletePost(@PathVariable Long postId) {
 		System.out.println("post silme isteği geldi. ID: " + postId);
 		String result = postService.deletePost(postId);
 		return ResponseEntity.ok(result);
